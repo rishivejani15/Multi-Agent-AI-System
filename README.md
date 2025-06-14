@@ -83,11 +83,6 @@ python main.py
 * [OpenWeatherMap API](https://openweathermap.org/api)
 * [NewsAPI](https://newsapi.org/)
 
-## 📅 Submission Details
-
-* **Deadline**: June 16, 2025
-* **Deliverables**: Code, README, `evals.md`, `.env`, `requirements.txt`
-
 ---
 
 Made with ❤️ by Rishi Vejani
