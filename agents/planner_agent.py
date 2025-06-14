@@ -1,7 +1,11 @@
-class PlannerAgent:
-    def process(self, state: dict) -> dict:
-        """Parses the user goal and generates an execution plan."""
-        goal = state.get("goal", "").lower()
+from google.adk.agents import Agent
+
+class PlannerAgent(Agent):
+    def __init__(self):
+        super().__init__(name="PlannerAgent", description="Plans which agents need to run based on the user's goal.")
+
+    def run(self, input_text: str, state: dict) -> dict:
+        goal = state.get("goal", input_text).lower()
         plan = []
 
         if "spacex" in goal:
