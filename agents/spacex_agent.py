@@ -1,8 +1,11 @@
+from google.adk.agents import Agent
 import requests
 
-class SpaceXAgent:
+class SpaceXAgent(Agent):
+    def __init__(self):
+        super().__init__(name="SpaceXAgent", description="Fetches the next SpaceX launch and its coordinates.")
+
     def get_next_launch_details(self) -> dict:
-        """Fetch next SpaceX launch from API."""
         try:
             url = "https://api.spacexdata.com/v3/launches/next"
             res = requests.get(url)
@@ -23,7 +26,6 @@ class SpaceXAgent:
             return {"status": "error", "error_message": str(e)}
 
     def resolve_site_to_latlon(self, site_name: str) -> tuple:
-        """Resolve SpaceX launchpad to latitude and longitude."""
         try:
             url = "https://api.spacexdata.com/v4/launchpads"
             res = requests.get(url).json()
@@ -34,15 +36,16 @@ class SpaceXAgent:
         except Exception:
             return None, None
 
-    def process(self, state: dict) -> dict:
-        """Fetch launch details and coordinates, save to state."""
-        launch_result = self.get_next_launch_details()
-        state["spacex_status"] = launch_result["status"]
-        if launch_result["status"] == "success":
-            state["launch_data"] = launch_result["launch_data"]
-            site_name = state["launch_data"]["site_name"]
+    def run(self, input_text: str, state: dict) -> dict:
+        result = self.get_next_launch_details()
+        state["spacex_status"] = result["status"]
+
+        if result["status"] == "success":
+            state["launch_data"] = result["launch_data"]
+            site_name = result["launch_data"].get("site_name", "")
             lat, lon = self.resolve_site_to_latlon(site_name)
             state["latlon"] = (lat, lon) if lat is not None and lon is not None else None
         else:
-            state["spacex_error"] = launch_result["error_message"]
+            state["spacex_error"] = result.get("error_message", "Unknown error")
+
         return state
